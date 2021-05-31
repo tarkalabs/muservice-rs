@@ -634,6 +634,8 @@ dependencies = [
  "anyhow",
  "hyper",
  "routerify",
+ "serde",
+ "serde_json",
  "sqlx",
  "tokio",
 ]

@@ -1,12 +1,14 @@
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use sqlx::{Executor, FromRow};
 use std::fmt::{Display, Formatter};
+use std::ops::Add;
 use anyhow::{Result, Context};
-struct DB {
+use serde::{Deserialize, Serialize};
+pub struct DB {
   pool: PgPool
 }
 
-#[derive(FromRow, Debug)]
+#[derive(FromRow, Debug, Serialize, Deserialize)]
 pub struct User {
   pub id: Option<i64>,
   pub name: String,
@@ -23,10 +25,15 @@ impl Display for User {
 }
 
 impl User {
-  //  pub async fn fetch_one<'e, 'c: 'e, E>(self, executor: E) -> Result<O, Error>
-  // E: 'e + Executor<'c, Database = DB>,
-  pub async fn insert<'e, 'c: 'e, E>(&mut self, ex: E) -> Result<()> 
-  where E: 'e + sqlx::Executor<'c, Database = sqlx::Postgres>
+  pub async fn all<'a, E>(ex: E) -> Result<Vec<User>> 
+  where E: 'a + sqlx::Executor<'a, Database = sqlx::Postgres>
+  {
+    let users = sqlx::query_as::<_, User>("select * from users").fetch_all(ex).await?;
+    Ok(users)
+  }
+
+  pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()> 
+  where E: 'a + sqlx::Executor<'a, Database = sqlx::Postgres>
   {
     let id = sqlx::query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
     .bind(self.name.clone()).bind(self.email.clone())
@@ -37,6 +44,9 @@ impl User {
 }
 
 impl DB {
+  pub fn connection(&self) -> PgPool {
+    self.pool.clone()
+  }
   pub async fn new() -> Result<Self> {
     let pool =PgPoolOptions::new()
       .max_connections(5)
@@ -53,7 +63,7 @@ impl DB {
 #[cfg(test)]
 mod tests {
   use sqlx::Acquire;
-use tokio::runtime::Runtime;
+  use tokio::runtime::Runtime;
   use super::{DB, User};
   #[test]
   fn test_should_connect() {
