@@ -1,7 +1,3 @@
-use hyper::{Request, Body, Response};
-use std::net::SocketAddr;
-use routerify::{Router, RouterService};
-use std::convert::Infallible;
 use anyhow::{Result, Context};
 
 mod db;

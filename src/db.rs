@@ -1,7 +1,13 @@
 use sqlx::postgres::{PgPool, PgPoolOptions};
-use sqlx::{Executor, FromRow};
+use sqlx::{
+    FromRow,
+    Executor,
+    Postgres,
+    migrate,
+    query_as,
+    query_scalar,
+};
 use std::fmt::{Display, Formatter};
-use std::ops::Add;
 use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
 use crate::settings;
@@ -28,16 +34,16 @@ impl Display for User {
 
 impl User {
   pub async fn all<'a, E>(ex: E) -> Result<Vec<User>> 
-  where E: 'a + sqlx::Executor<'a, Database = sqlx::Postgres>
+  where E: 'a + Executor<'a, Database = Postgres>
   {
-    let users = sqlx::query_as::<_, User>("select * from users").fetch_all(ex).await?;
+    let users = query_as::<_, User>("select * from users").fetch_all(ex).await?;
     Ok(users)
   }
 
   pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()> 
-  where E: 'a + sqlx::Executor<'a, Database = sqlx::Postgres>
+  where E: 'a + Executor<'a, Database = Postgres>
   {
-    let id = sqlx::query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
+    let id = query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
     .bind(self.name.clone()).bind(self.email.clone())
     .fetch_one(ex).await.context("Unable to save")?;
     self.id = Some(id);
@@ -58,7 +64,7 @@ impl DB {
   }
 
   pub async fn migrate(&self) -> Result<()> {
-    sqlx::migrate!().run(&self.pool).await.context("Failed to run migrations")
+    migrate!().run(&self.pool).await.context("Failed to run migrations")
   }
 }
 
@@ -83,7 +89,7 @@ mod tests {
     rt.block_on(u.insert(&mut t1)).unwrap();
     rt.block_on(t1.commit()).unwrap();
     match u.id {
-      Some(id) => println!("{}", u),
+      Some(_) => println!("{}", u),
       None => panic!()
     }
     rt.block_on(t.rollback()).unwrap();

@@ -1,6 +1,6 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use crate::db::DB;
-use anyhow::{Result, Error, Context};
+use anyhow::{Result, Context};
 
 pub struct AppState {
   db: Arc<DB>,
