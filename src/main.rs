@@ -7,6 +7,7 @@ use anyhow::{Result, Context};
 mod db;
 mod router;
 mod server;
+mod settings;
 mod app_state;
 
 #[tokio::main]

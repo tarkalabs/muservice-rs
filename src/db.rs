@@ -4,6 +4,8 @@ use std::fmt::{Display, Formatter};
 use std::ops::Add;
 use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
+use crate::settings;
+
 pub struct DB {
   pool: PgPool
 }
@@ -50,7 +52,7 @@ impl DB {
   pub async fn new() -> Result<Self> {
     let pool =PgPoolOptions::new()
       .max_connections(5)
-      .connect("postgres:///testdb?sslmode=disable")
+      .connect(&settings::SETTINGS.database.url)
       .await.context("Unable to connect")?;
     Ok(DB{pool})
   }

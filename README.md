@@ -1,6 +1,6 @@
 ## Objectives
 
-* [ ] Config with env variables (12factor)
+* [x] Config with env variables (12factor)
 * [x] Basic database connection
 * [x] HTTP Server with connection to database
 * [ ] Logging
