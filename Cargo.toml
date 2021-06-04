@@ -16,3 +16,5 @@ serde_json = "1.0.64"
 serde = {version = "1.0.126", features=["derive"]}
 config = {version = "0.11.0", features=["json"]}
 lazy_static = "1.4.0"
+tracing = "0.1.26"
+tracing-subscriber = "0.2.18"

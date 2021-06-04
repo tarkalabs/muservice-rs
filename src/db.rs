@@ -10,7 +10,8 @@ use sqlx::{
 use std::fmt::{Display, Formatter};
 use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
-use crate::settings;
+use crate::settings::SETTINGS;
+use tracing::info;
 
 pub struct DB {
   pool: PgPool
@@ -58,8 +59,9 @@ impl DB {
   pub async fn new() -> Result<Self> {
     let pool =PgPoolOptions::new()
       .max_connections(5)
-      .connect(&settings::SETTINGS.database.url)
+      .connect(&SETTINGS.database.url)
       .await.context("Unable to connect")?;
+    info!("Connected to database: {}", SETTINGS.database.url);
     Ok(DB{pool})
   }
 
