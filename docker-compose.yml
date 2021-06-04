@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=admin
+  muservice:
+    image: muservice:latest
+    build: .
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:admin@db/testdb?sslmode=disable
+    ports:
+      - "3000:3000"
