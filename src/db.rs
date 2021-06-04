@@ -34,14 +34,14 @@ impl Display for User {
 }
 
 impl User {
-  pub async fn all<'a, E>(ex: E) -> Result<Vec<User>> 
+  pub async fn all<'a, E>(ex: E) -> Result<Vec<User>>
   where E: 'a + Executor<'a, Database = Postgres>
   {
     let users = query_as::<_, User>("select * from users").fetch_all(ex).await?;
     Ok(users)
   }
 
-  pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()> 
+  pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()>
   where E: 'a + Executor<'a, Database = Postgres>
   {
     let id = query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
@@ -61,12 +61,10 @@ impl DB {
       .max_connections(5)
       .connect(&SETTINGS.database.url)
       .await.context("Unable to connect")?;
+    let migrator = migrate!();
+    migrator.run(&pool).await.context("Unable to run migrations!")?;
     info!("Connected to database: {}", SETTINGS.database.url);
     Ok(DB{pool})
-  }
-
-  pub async fn migrate(&self) -> Result<()> {
-    migrate!().run(&self.pool).await.context("Failed to run migrations")
   }
 }
 
@@ -79,7 +77,6 @@ mod tests {
   fn test_should_connect() {
     let rt = Runtime::new().unwrap();
     let db = rt.block_on(DB::new()).unwrap();
-    rt.block_on(db.migrate()).unwrap();
     let mut u = User{
       id: None, 
       name: "Vagmi".into(), 

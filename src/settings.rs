@@ -29,8 +29,6 @@ impl Settings {
 
         s.merge(Environment::new().separator("_".into()))?;
 
-        println!("database: {:?}", s.get::<String>("database.url"));
-
         s.try_into().context("Unable to parse json into settings struct")
     }
 }
