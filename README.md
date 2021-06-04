@@ -4,7 +4,7 @@
 * [x] Basic database connection
 * [x] HTTP Server with connection to database
 * [x] Logging
-* [ ] Dockerizing
+* [x] Dockerizing
 * [ ] Integration tests with setup/teardown
 * [ ] CI with CircleCI or github actions
 * [ ] Deploy on Heroku
