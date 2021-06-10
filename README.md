@@ -6,5 +6,5 @@
 * [x] Logging
 * [x] Dockerizing
 * [ ] Integration tests with setup/teardown
-* [ ] CI with CircleCI or github actions
+* [x] CI with CircleCI or github actions
 * [ ] Deploy on Heroku
