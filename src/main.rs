@@ -1,12 +1,8 @@
 use anyhow::{Result, Context};
 use tracing::subscriber::set_global_default;
 use tracing_subscriber::FmtSubscriber;
+use libmuservice::{router, server};
 
-mod db;
-mod router;
-mod server;
-mod settings;
-mod app_state;
 
 #[tokio::main]
 async fn main() -> Result<()> {
