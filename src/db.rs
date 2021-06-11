@@ -71,26 +71,24 @@ impl DB {
 #[cfg(test)]
 mod tests {
   use sqlx::Acquire;
-  use tokio::runtime::Runtime;
   use super::{DB, User};
-  #[test]
-  fn test_should_connect() {
-    let rt = Runtime::new().unwrap();
-    let db = rt.block_on(DB::new()).unwrap();
+  #[tokio::test]
+  async fn test_should_connect() {
+    let db = DB::new().await.unwrap();
     let mut u = User{
       id: None, 
       name: "Vagmi".into(), 
       email: "vagmi@example.com".into()
     };
-    let mut t = rt.block_on(db.pool.begin()).unwrap();
+    let mut t = db.pool.begin().await.unwrap();
 
-    let mut t1 = rt.block_on(t.begin()).unwrap();
-    rt.block_on(u.insert(&mut t1)).unwrap();
-    rt.block_on(t1.commit()).unwrap();
+    let mut t1 = t.begin().await.unwrap();
+    u.insert(&mut t1).await.unwrap();
+    t1.commit().await.unwrap();
     match u.id {
       Some(_) => println!("{}", u),
       None => panic!()
     }
-    rt.block_on(t.rollback()).unwrap();
+    t.rollback().await.unwrap();
   }
 }
