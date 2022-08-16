@@ -4,6 +4,8 @@ services:
     image: postgres:latest
     restart: always
     environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
   muservice:
     image: muservice:latest
