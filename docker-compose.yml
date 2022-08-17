@@ -3,14 +3,26 @@ services:
   db:
     image: postgres:latest
     restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
   muservice:
-    image: muservice:latest
-    build: .
+    image: muservice.dev:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+    - .:/app
+    - target:/app/target
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgres://postgres:admin@db/testdb?sslmode=disable
     ports:
       - "3000:3000"
+volumes:
+  pgdata:
+  target:
