@@ -2,6 +2,7 @@ use std::sync::Arc;
 use crate::db::DB;
 use anyhow::{Result, Context};
 
+#[derive(Clone)]
 pub struct AppState {
   db: Arc<DB>,
 }

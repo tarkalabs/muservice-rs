@@ -4,4 +4,4 @@ WORKDIR /app
 RUN cargo install sccache cargo-watch
 ENV RUSTC_WRAPPER=/usr/local/cargo/bin/sccache
 EXPOSE 3000
-CMD cargo watch -x run
+CMD RUST_LOG=tower_http=trace cargo watch -x run
