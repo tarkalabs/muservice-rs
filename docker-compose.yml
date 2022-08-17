@@ -20,6 +20,7 @@ services:
     depends_on:
       - db
     environment:
+      - RUST_LOG=muservice=debug,tower_http=debug
       - DATABASE_URL=postgres://postgres:admin@db/testdb?sslmode=disable
     ports:
       - "3000:3000"

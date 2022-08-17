@@ -9,6 +9,7 @@ use axum::{
 };
 use crate::db::User;
 use tower::ServiceBuilder;
+
 use tower_http::trace::TraceLayer;
 
 use axum::{
@@ -18,8 +19,8 @@ use axum::{
 
 use crate::app_state::{self, AppState};
 
-async fn home_handler() -> Json<String> {
-    Json(String::from("Hello server"))
+async fn home_handler() -> String {
+    String::from("Hello server\n")
 }
 
 async fn users_handler(req: Request<Body>) -> Result<Json<Vec<User>>, StatusCode> {
@@ -35,7 +36,6 @@ async fn create_user_handler(Json(mut payload): Json<User>, Extension(state): Ex
         .await
         .map_err(|_|StatusCode::INTERNAL_SERVER_ERROR)?;
     Ok((
-        // set status code
         StatusCode::CREATED,
         [("Content-Type", "application/json")]
     ).into_response())

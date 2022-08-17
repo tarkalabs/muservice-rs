@@ -1,7 +1,3 @@
-use hyper::service::Service;
-use hyper::{Body, Request};
-use routerify::RequestServiceBuilder;
-
 // async fn setup() {
 // 	let state = libmuservice::app_state::AppState::init();
 // 	// we need the test database setup
