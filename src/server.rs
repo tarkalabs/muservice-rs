@@ -1,10 +1,11 @@
-use std::str::FromStr;
+use anyhow::{Result, Context, Error};
 use axum::{Router, Server};
 use hyper::{Body};
 use std::net::SocketAddr;
-use anyhow::{Result, Context, Error};
+use std::str::FromStr;
+use tracing::log::info;
+
 use crate::settings::SETTINGS;
-use tracing::info;
 
 pub async fn serve(router: Router<Body>) -> Result<()>{
     let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))?;
@@ -14,6 +15,6 @@ pub async fn serve(router: Router<Body>) -> Result<()>{
         .await {
             Err(e) => Err(Error::msg(e.to_string())),
             Ok(rs) => Ok(rs)
-    }.context("unable to create router service")?;
+    }.context("Unable to create router service")?;
     Ok(())
 }

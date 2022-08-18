@@ -41,21 +41,16 @@ async fn create_user_handler(Json(mut payload): Json<User>, Extension(state): Ex
     ).into_response())
 }
 
-// async fn logger(req: Request<Body>) -> Result<Request<Body>> {
-//     info!("{} {} {}", req.remote_addr(), req.method(), req.uri().path());
-//     Ok(req)
-// }
-
 pub async fn build_router() -> Result<Router<Body>> {
     let shared_state = app_state::AppState::init().await.context("error initializing state")?;
     let router = Router::new()
+    .route("/", get(home_handler))
+    .route("/users", get(users_handler))
+    .route("/users", post(create_user_handler))
     .layer(
         ServiceBuilder::new()
             .layer(Extension(shared_state))
             .layer(TraceLayer::new_for_http())
-    )
-    .route("/", get(home_handler))
-    .route("/users", get(users_handler))
-    .route("/users", post(create_user_handler));
+    );
     Ok(router)
 }
