@@ -9,6 +9,7 @@ use axum::{
 };
 use crate::db::User;
 use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 
 use tower_http::trace::TraceLayer;
 
@@ -51,6 +52,7 @@ pub async fn build_router() -> Result<Router<Body>> {
         ServiceBuilder::new()
             .layer(Extension(shared_state))
             .layer(TraceLayer::new_for_http())
+            .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any))
     );
     Ok(router)
 }
