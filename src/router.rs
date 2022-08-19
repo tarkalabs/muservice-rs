@@ -1,24 +1,17 @@
 use anyhow::{Result, Context};
 use axum::{
-    http::Request,
     body::Body,
-    routing::{get, post},
     Extension,
-    Router, response::{Response, IntoResponse},
-    
+    http::{Request, StatusCode},
+    Json,
+    response::{Response, IntoResponse},
+    Router, 
+    routing::{get, post}
 };
-use crate::db::User;
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
-
 use tower_http::trace::TraceLayer;
 
-use axum::{
-    Json,
-    http::StatusCode
-};
-
-use crate::app_state::{self, AppState};
+use crate::{app_state::{self, AppState}, db::User};
 
 async fn home_handler() -> String {
     String::from("Hello server\n")
@@ -52,7 +45,6 @@ pub async fn build_router() -> Result<Router<Body>> {
         ServiceBuilder::new()
             .layer(Extension(shared_state))
             .layer(TraceLayer::new_for_http())
-            .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any))
     );
     Ok(router)
 }
