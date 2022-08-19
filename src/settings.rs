@@ -14,6 +14,7 @@ pub struct Settings {
     pub host: String,
     pub port: i32,
     pub database: Database,
+    pub rust_log: String
 }
 
 impl Settings {

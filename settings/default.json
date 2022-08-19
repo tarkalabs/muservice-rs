@@ -3,5 +3,6 @@
   "port": 3000,
   "database": {
     "url": "postgres:///testdb?sslmode=disable"
-  }
+  },
+  "rust_log": "info,sqlx::query=off,tower_http=debug"
 }

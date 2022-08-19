@@ -1,21 +1,20 @@
-use std::str::FromStr;
-use hyper::{Server, Body};
-use std::net::SocketAddr;
-use routerify::{Router, RouterService};
 use anyhow::{Result, Context, Error};
-use crate::settings::SETTINGS;
-use tracing::{info, error};
+use axum::{Router, Server};
+use hyper::{Body};
+use std::net::SocketAddr;
+use std::str::FromStr;
+use tracing::log::info;
 
-pub async fn serve(router: Router<Body, Error>) -> Result<()>{
-    let rs = match RouterService::new(router) {
-        Err(e) => Err(Error::msg(e.to_string())),
-        Ok(rs) => Ok(rs)
-    }.context("unable to create router service")?;
-    let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))
-        .context("Unable to parse host / port")?;
+use crate::settings::SETTINGS;
+
+pub async fn serve(router: Router<Body>) -> Result<()>{
+    let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))?;
     info!("Server started listening on {}", addr);
-    if let Err(e) = Server::bind(&addr).serve(rs).await {
-        error!("Server error: {}", e);
-    }
+    match Server::bind(&addr)
+        .serve(router.into_make_service())
+        .await {
+            Err(e) => Err(Error::msg(e.to_string())),
+            Ok(rs) => Ok(rs)
+    }.context("Unable to create router service")?;
     Ok(())
 }
