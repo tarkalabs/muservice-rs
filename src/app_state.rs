@@ -5,7 +5,7 @@ use crate::db::DB;
 
 #[derive(Clone)]
 pub struct AppState {
-  db: Arc<DB>,
+  pub db: Arc<DB>,
 }
 
 impl AppState {

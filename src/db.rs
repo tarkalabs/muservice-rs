@@ -14,7 +14,7 @@ use crate::settings::SETTINGS;
 use tracing::info;
 
 pub struct DB {
-  pool: PgPool
+  pub pool: PgPool
 }
 
 #[derive(FromRow, Debug, Serialize, Deserialize)]
@@ -57,7 +57,7 @@ impl DB {
     self.pool.clone()
   }
   pub async fn new() -> Result<Self> {
-    let pool =PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
       .max_connections(5)
       .connect(&SETTINGS.database.url)
       .await.context("Unable to connect")?;
