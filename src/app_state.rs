@@ -5,7 +5,7 @@ use crate::db::DB;
 
 #[derive(Clone)]
 pub struct AppState {
-  pub db: Arc<DB>,
+  db: Arc<DB>,
 }
 
 impl AppState {
@@ -15,5 +15,8 @@ impl AppState {
   }
   pub fn db(&self) -> Arc<DB> {
     self.db.clone()
+  }
+  pub fn init_with_db(db: DB) -> Self {
+    AppState {db: Arc::new(db)}
   }
 }

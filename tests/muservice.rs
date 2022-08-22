@@ -2,7 +2,7 @@ use axum::{body::Body, http::Request};
 use http::StatusCode;
 use libmuservice::{app_state::AppState, db::{DB, User}};
 use tower::{ServiceExt, Service};
-use std::{net::{SocketAddr, TcpListener}, sync::Arc};
+use std::net::{SocketAddr, TcpListener};
 
 #[tokio::test]
 async fn test_should_work() {
@@ -39,8 +39,8 @@ async fn test_should_work() {
     pool(variable = "default_migrated_pool")
 )]
 async fn test_create_user_handler() {
-    let db = Arc::new(DB { pool: default_migrated_pool });
-    let app_state = AppState { db };
+    let db = DB::new_with_pool(default_migrated_pool);
+    let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
     let user = User { id: None, name: "userman".to_string(), email: "email@email.com".to_string() };
@@ -59,8 +59,8 @@ async fn test_create_user_handler() {
     pool(variable = "default_migrated_pool")
 )]
 async fn test_users_handler_empty() {
-    let db = Arc::new(DB { pool: default_migrated_pool });
-    let app_state = AppState { db };
+    let db = DB::new_with_pool(default_migrated_pool);
+    let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
     let request = Request::builder()
@@ -78,8 +78,8 @@ async fn test_users_handler_empty() {
     pool(variable = "test_migration_pool", migrations = "./test_migrations")
 )]
 async fn test_users_handler_has_user() {
-    let db = Arc::new(DB { pool: test_migration_pool });
-    let app_state = AppState { db };
+    let db = DB::new_with_pool(test_migration_pool);
+    let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
     let request = Request::builder()

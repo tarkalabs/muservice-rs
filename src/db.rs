@@ -14,7 +14,7 @@ use crate::settings::SETTINGS;
 use tracing::info;
 
 pub struct DB {
-  pub pool: PgPool
+  pool: PgPool
 }
 
 #[derive(FromRow, Debug, Serialize, Deserialize)]
@@ -65,6 +65,9 @@ impl DB {
     migrator.run(&pool).await.context("Unable to run migrations!")?;
     info!("Connected to database: {}", SETTINGS.database.url);
     Ok(DB{pool})
+  }
+  pub fn new_with_pool(pool: PgPool) -> Self {
+    DB{pool}
   }
 }
 
