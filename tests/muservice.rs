@@ -1,6 +1,7 @@
 use axum::{body::Body, http::Request};
 use http::StatusCode;
 use libmuservice::{app_state::AppState, db::{DB, User}};
+use sqlx::PgPool;
 use tower::{ServiceExt, Service};
 use std::net::{SocketAddr, TcpListener};
 
@@ -35,11 +36,9 @@ async fn test_should_work() {
     assert_eq!(actual_body, "Hello server\n");
 }
 
-#[sqlx_database_tester::test(
-    pool(variable = "default_migrated_pool")
-)]
-async fn test_create_user_handler() {
-    let db = DB::new_with_pool(default_migrated_pool);
+#[sqlx::test]
+async fn test_create_user_handler(pool: PgPool) {
+    let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
@@ -55,11 +54,9 @@ async fn test_create_user_handler() {
     assert_eq!(response.status(), StatusCode::CREATED);
 }
 
-#[sqlx_database_tester::test(
-    pool(variable = "default_migrated_pool")
-)]
-async fn test_users_handler_empty() {
-    let db = DB::new_with_pool(default_migrated_pool);
+#[sqlx::test]
+async fn test_users_handler_empty(pool: PgPool) {
+    let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
@@ -74,11 +71,9 @@ async fn test_users_handler_empty() {
     assert_eq!(users.len(), 0);
 }
 
-#[sqlx_database_tester::test(
-    pool(variable = "test_migration_pool", migrations = "./test_migrations")
-)]
-async fn test_users_handler_has_user() {
-    let db = DB::new_with_pool(test_migration_pool);
+#[sqlx::test(migrations = "./test_migrations")]
+async fn test_users_handler_has_user(pool: PgPool) {
+    let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
     let mut router = libmuservice::router::build_router(app_state).await.unwrap();
 
