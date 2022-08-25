@@ -16,4 +16,7 @@ impl AppState {
   pub fn db(&self) -> Arc<DB> {
     self.db.clone()
   }
+  pub fn init_with_db(db: DB) -> Self {
+    AppState {db: Arc::new(db)}
+  }
 }

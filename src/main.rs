@@ -1,5 +1,5 @@
 use anyhow::{Result, Context};
-use libmuservice::{router, server};
+use libmuservice::{router, server, app_state::AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use libmuservice::settings::SETTINGS;
 
@@ -14,6 +14,7 @@ async fn main() -> Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let router = router::build_router().await?;
+    let app_state = AppState::init().await?;
+    let router = router::build_router(app_state).await?;
     server::serve(router).await.context("Unable to serve")
 }

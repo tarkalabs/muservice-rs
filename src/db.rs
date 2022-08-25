@@ -57,7 +57,7 @@ impl DB {
     self.pool.clone()
   }
   pub async fn new() -> Result<Self> {
-    let pool =PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
       .max_connections(5)
       .connect(&SETTINGS.database.url)
       .await.context("Unable to connect")?;
@@ -65,6 +65,9 @@ impl DB {
     migrator.run(&pool).await.context("Unable to run migrations!")?;
     info!("Connected to database: {}", SETTINGS.database.url);
     Ok(DB{pool})
+  }
+  pub fn new_with_pool(pool: PgPool) -> Self {
+    DB{pool}
   }
 }
 

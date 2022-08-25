@@ -1,4 +1,4 @@
-use anyhow::{Result, Context};
+use anyhow::Result;
 use axum::{
     body::Body,
     Extension,
@@ -11,7 +11,7 @@ use axum::{
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
-use crate::{app_state::{self, AppState}, db::User};
+use crate::{app_state::{AppState}, db::User};
 
 async fn home_handler() -> String {
     String::from("Hello server\n")
@@ -35,15 +35,15 @@ async fn create_user_handler(Json(mut payload): Json<User>, Extension(state): Ex
     ).into_response())
 }
 
-pub async fn build_router() -> Result<Router<Body>> {
-    let shared_state = app_state::AppState::init().await.context("error initializing state")?;
+pub async fn build_router(app_state: AppState) -> Result<Router<Body>> {
+    // let shared_state = app_state::AppState::init().await.context("error initializing state")?;
     let router = Router::new()
     .route("/", get(home_handler))
     .route("/users", get(users_handler))
     .route("/users", post(create_user_handler))
     .layer(
         ServiceBuilder::new()
-            .layer(Extension(shared_state))
+            .layer(Extension(app_state))
             .layer(TraceLayer::new_for_http())
     );
     Ok(router)
