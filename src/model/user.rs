@@ -7,7 +7,7 @@ use sqlx::{
 };
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
-use anyhow::{Result, Context};
+use color_eyre::{eyre::WrapErr, Result};
 
 #[derive(FromRow, Debug, Serialize, Deserialize)]
 pub struct User {
@@ -38,7 +38,7 @@ impl User {
   {
     let id = query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
     .bind(self.name.clone()).bind(self.email.clone())
-    .fetch_one(ex).await.context("Unable to save")?;
+    .fetch_one(ex).await.context("Unable to save user")?;
     self.id = Some(id);
     Ok(())
   }

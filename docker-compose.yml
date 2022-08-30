@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://postgres:admin@db/testdb?sslmode=disable
+      - DATABASE_URL=postgres://postgres:admin@db/tesatdb?sslmode=disable
     ports:
       - "3000:3000"
 volumes:

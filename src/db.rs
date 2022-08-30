@@ -1,6 +1,6 @@
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use sqlx::{migrate};
-use anyhow::{Result, Context};
+use color_eyre::{eyre::WrapErr, Result};
 use crate::settings::SETTINGS;
 use tracing::info;
 

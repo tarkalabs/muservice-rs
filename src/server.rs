@@ -1,4 +1,4 @@
-use anyhow::{Result, Context, Error};
+use color_eyre::{Report, Result, eyre::Context};
 use axum::{Router, Server};
 use hyper::{Body};
 use std::net::SocketAddr;
@@ -13,7 +13,7 @@ pub async fn serve(router: Router<Body>) -> Result<()>{
     match Server::bind(&addr)
         .serve(router.into_make_service())
         .await {
-            Err(e) => Err(Error::msg(e.to_string())),
+            Err(e) => Err(Report::new(e)),
             Ok(rs) => Ok(rs)
     }.context("Unable to create router service")?;
     Ok(())

@@ -1,6 +1,6 @@
 use std::env;
 use config::{File, Config, Environment, FileFormat};
-use anyhow::{Result, Context};
+use color_eyre::{Result, eyre::Context};
 use serde::Deserialize;
 use lazy_static::lazy_static;
 

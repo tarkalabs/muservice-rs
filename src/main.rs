@@ -1,4 +1,4 @@
-use anyhow::{Result, Context};
+use color_eyre::{eyre::WrapErr, Result};
 use libmuservice::{router, server, app_state::AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use libmuservice::settings::SETTINGS;
@@ -13,6 +13,7 @@ async fn main() -> Result<()> {
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
+    color_eyre::install()?;
 
     let app_state = AppState::init().await?;
     let router = router::build_router(app_state).await?;
