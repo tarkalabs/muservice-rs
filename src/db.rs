@@ -9,7 +9,7 @@ use tracing::info;
 pub enum DBError {
     #[error("Unable to run migrations!")]
     MigrationError(#[from] sqlx::migrate::MigrateError),
-    #[error("Unable to connect!")]
+    #[error("Database returned an error!")]
     ConnectionError(#[from] sqlx::Error)
 }
 
@@ -32,8 +32,7 @@ impl DB {
     let migrator = migrate!();
     migrator.run(&pool).await
     .map_err(|err| err.into())
-    .report()
-    .attach_printable_lazy(|| format!("Unable to run migrations!"))?;
+    .report()?;
     info!("Connected to database: {}", SETTINGS.database.url);
     Ok(DB{pool})
   }
@@ -58,7 +57,9 @@ mod tests {
     let mut t = db.pool.begin().await.unwrap();
 
     let mut t1 = t.begin().await.unwrap();
-    u.insert(&mut t1).await.unwrap();
+    //ISSUE HERE: We don't want to use Report<C> in the test, but then will we get the stack info from insert?
+    let result: Result<(), sqlx::Error> = u.insert(&mut t1).await;
+    // u.insert(&mut t1).await.unwrap();
     t1.commit().await.unwrap();
     match u.id {
       Some(_) => println!("{}", u),

@@ -7,7 +7,9 @@ use sqlx::{
 };
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
-use anyhow::{Result, Context};
+use error_stack::{IntoReport, Result, ResultExt};
+
+use crate::db::DBError;
 
 #[derive(FromRow, Debug, Serialize, Deserialize)]
 pub struct User {
@@ -26,19 +28,27 @@ impl Display for User {
 }
 
 impl User {
-  pub async fn all<'a, E>(ex: E) -> Result<Vec<User>>
+  pub async fn all<'a, E>(ex: E) -> Result<Vec<User>, DBError>
   where E: 'a + Executor<'a, Database = Postgres>
   {
-    let users = query_as::<_, User>("select * from users").fetch_all(ex).await?;
+    let users = query_as::<_, User>("select * from users").fetch_all(ex)
+    .await
+    .map_err(|err| err.into())
+    .report()
+    .attach_printable_lazy(|| format!("Failed to get user list!"))?;
     Ok(users)
   }
 
-  pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()>
+  pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<(), DBError>
   where E: 'a + Executor<'a, Database = Postgres>
   {
     let id = query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
     .bind(self.name.clone()).bind(self.email.clone())
-    .fetch_one(ex).await.context("Unable to save")?;
+    .fetch_one(ex)
+    .await
+    .map_err(|err| err.into())
+    .report()
+    .attach_printable_lazy(|| format!("Failed to insert user!"))?;
     self.id = Some(id);
     Ok(())
   }
