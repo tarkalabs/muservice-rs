@@ -1,6 +1,6 @@
 use axum::{body::Body, http::Request};
 use http::StatusCode;
-use libmuservice::{app_state::AppState, db::{DB, User}};
+use libmuservice::{app_state::AppState, db::DB, model::User};
 use sqlx::PgPool;
 use tower::{ServiceExt, Service};
 use std::net::{SocketAddr, TcpListener};

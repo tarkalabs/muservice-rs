@@ -11,7 +11,7 @@ use axum::{
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
-use crate::{app_state::{AppState}, db::User};
+use crate::{app_state::{AppState}, model::User};
 
 async fn home_handler() -> String {
     String::from("Hello server\n")
