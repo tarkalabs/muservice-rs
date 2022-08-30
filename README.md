@@ -26,7 +26,9 @@ muservice-rs is a template for creating microservices in Rust. This template com
 
 
 ## Environment variables
-The environment variables are kept in the settings folder and are in JSON format. `settings/default.json` is always read and the values can be overwritten by having another JSON file whose name matches the environment variable `ENV`. You can also set environment variables through a `.env` file or the `environment` field of `docker-compose.yml`. Each file can having missing fields, as long as the combination of all settings sources contains all necessary variables.
+The environment variables are kept in the settings folder and are in JSON format. `settings/default.json` is always read and the values can be overwritten by having another JSON file whose name matches the environment variable `ENV`. 
+You can also set environment variables through a `.env` file or the `environment` field of `docker-compose.yml`. Environment variables in `.env` files are written in uppercase and use `_` as a separator between terms when specifying a nested field. An example can be found in `docker-compose.yml`.
+Each file can having missing fields, as long as the combination of all settings sources contains all necessary variables. For more details, such as other accepted file types for your settings, check the documentation of the `config` crate.
 
 ## Tests
 If you set up the project using Docker, the tests can be run by running `cargo test` within the `muservice` container. Otherwise, simply run `cargo test` from the project folder.
