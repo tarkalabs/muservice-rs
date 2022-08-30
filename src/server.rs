@@ -4,9 +4,11 @@ use hyper::{Body};
 use std::net::SocketAddr;
 use std::str::FromStr;
 use tracing::log::info;
+use tracing::instrument;
 
 use crate::settings::SETTINGS;
 
+#[instrument]
 pub async fn serve(router: Router<Body>) -> Result<()>{
     let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))?;
     info!("Server started listening on {}", addr);

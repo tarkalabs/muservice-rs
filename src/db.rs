@@ -1,9 +1,11 @@
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use sqlx::{migrate};
 use color_eyre::{eyre::WrapErr, Result};
+use tracing::instrument;
 use crate::settings::SETTINGS;
 use tracing::info;
 
+#[derive(Debug)]
 pub struct DB {
   pool: PgPool
 }
@@ -12,6 +14,7 @@ impl DB {
   pub fn connection(&self) -> PgPool {
     self.pool.clone()
   }
+  #[instrument]
   pub async fn new() -> Result<Self> {
     let pool = PgPoolOptions::new()
       .max_connections(5)
