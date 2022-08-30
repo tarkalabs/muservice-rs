@@ -1,4 +1,4 @@
-use anyhow::{Result, Context};
+use error_stack::{IntoReport, Result, ResultExt};
 use libmuservice::{router, server, app_state::AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use libmuservice::settings::SETTINGS;
