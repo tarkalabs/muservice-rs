@@ -3,7 +3,6 @@ use config::{File, Config, Environment, FileFormat};
 use color_eyre::{Result, eyre::Context};
 use serde::Deserialize;
 use lazy_static::lazy_static;
-use tracing::instrument;
 
 #[derive(Debug, Deserialize)]
 pub struct Database {
@@ -19,7 +18,6 @@ pub struct Settings {
 }
 
 impl Settings {
-    #[instrument]
     pub fn new() -> Result<Self> {
         let env = env::var("ENV").ok();
         let mut builder = Config::builder()

@@ -3,9 +3,7 @@ use libmuservice::{router, server, app_state::AppState};
 use tracing_error::ErrorLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use libmuservice::settings::SETTINGS;
-use tracing::instrument;
 
-#[instrument]
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::registry()

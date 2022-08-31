@@ -4,11 +4,10 @@ use hyper::{Body};
 use std::net::SocketAddr;
 use std::str::FromStr;
 use tracing::log::info;
-use tracing::instrument;
 
 use crate::settings::SETTINGS;
 
-#[instrument]
+#[tracing::instrument(skip_all)]
 pub async fn serve(router: Router<Body>) -> Result<()>{
     let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))?;
     let builder = Server::try_bind(&addr)?;
@@ -19,5 +18,6 @@ pub async fn serve(router: Router<Body>) -> Result<()>{
             Err(e) => Err(Report::new(e)),
             Ok(rs) => Ok(rs)
     }.context("Unable to create router service")?;
+    
     Ok(())
 }

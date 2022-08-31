@@ -28,7 +28,7 @@ impl Display for User {
 }
 
 impl User {
-  #[instrument]
+  #[instrument(skip(ex))]
   pub async fn all<'a, E>(ex: E) -> Result<Vec<User>>
   where E: 'a + Executor<'a, Database = Postgres>
   {
@@ -36,7 +36,7 @@ impl User {
     Ok(users)
   }
 
-  #[instrument]
+  #[instrument(skip(ex))]
   pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()>
   where E: 'a + Executor<'a, Database = Postgres>
   {
