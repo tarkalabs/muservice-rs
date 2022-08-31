@@ -9,8 +9,9 @@ use crate::settings::SETTINGS;
 
 pub async fn serve(router: Router<Body>) -> Result<()>{
     let addr = SocketAddr::from_str(&format!("{}:{}", SETTINGS.host, SETTINGS.port))?;
+    let builder = Server::try_bind(&addr)?;
     info!("Server started listening on {}", addr);
-    match Server::bind(&addr)
+    match builder
         .serve(router.into_make_service())
         .await {
             Err(e) => Err(Report::new(e)),
