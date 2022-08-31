@@ -1,6 +1,6 @@
 use std::env;
-use config::{File, Config, Environment, FileFormat};
-use anyhow::{Result, Context};
+use config::{File, Config, Environment, FileFormat, ConfigError};
+use error_stack::{IntoReport, Result, ResultExt};
 use serde::Deserialize;
 use lazy_static::lazy_static;
 
@@ -18,7 +18,7 @@ pub struct Settings {
 }
 
 impl Settings {
-    pub fn new() -> Result<Self> {
+    pub fn new() -> Result<Self, ConfigError> {
         let env = env::var("ENV").ok();
         let mut builder = Config::builder()
             .add_source(File::new("settings/default", FileFormat::Json))
@@ -30,7 +30,7 @@ impl Settings {
         };
 
         let config = builder.build()?;
-        config.try_deserialize().context("Failed to parse JSON into Settings struct.")
+        config.try_deserialize().report().attach_printable_lazy(|| "Failed to parse JSON into Settings struct.")
     }
 }
 

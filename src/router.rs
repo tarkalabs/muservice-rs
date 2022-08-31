@@ -1,4 +1,3 @@
-use anyhow::Result;
 use axum::{
     body::Body,
     Extension,
@@ -35,7 +34,7 @@ async fn create_user_handler(Json(mut payload): Json<User>, Extension(state): Ex
     ).into_response())
 }
 
-pub async fn build_router(app_state: AppState) -> Result<Router<Body>> {
+pub async fn build_router(app_state: AppState) -> Router<Body> {
     // let shared_state = app_state::AppState::init().await.context("error initializing state")?;
     let router = Router::new()
     .route("/", get(home_handler))
@@ -46,5 +45,5 @@ pub async fn build_router(app_state: AppState) -> Result<Router<Body>> {
             .layer(Extension(app_state))
             .layer(TraceLayer::new_for_http())
     );
-    Ok(router)
+    router
 }

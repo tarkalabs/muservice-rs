@@ -14,7 +14,7 @@ async fn test_should_work() {
     tokio::spawn(async move {
         axum::Server::from_tcp(listener)
             .unwrap()
-            .serve(libmuservice::router::build_router(app_state).await.unwrap().into_make_service())
+            .serve(libmuservice::router::build_router(app_state).await.into_make_service())
             .await
             .unwrap();
     });
@@ -40,7 +40,7 @@ async fn test_should_work() {
 async fn test_create_user_handler(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = libmuservice::router::build_router(app_state).await;
 
     let user = User { id: None, name: "userman".to_string(), email: "email@email.com".to_string() };
 
@@ -58,7 +58,7 @@ async fn test_create_user_handler(pool: PgPool) {
 async fn test_users_handler_empty(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = libmuservice::router::build_router(app_state).await;
 
     let request = Request::builder()
         .uri("/users")
@@ -75,7 +75,7 @@ async fn test_users_handler_empty(pool: PgPool) {
 async fn test_users_handler_has_user(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = libmuservice::router::build_router(app_state).await;
 
     let request = Request::builder()
         .uri("/users")

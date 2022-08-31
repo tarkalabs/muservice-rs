@@ -10,7 +10,7 @@ pub enum DBError {
     #[error("Unable to run migrations!")]
     MigrationError(#[from] sqlx::migrate::MigrateError),
     #[error("Database returned an error!")]
-    ConnectionError(#[from] sqlx::Error)
+    SQLXError(#[from] sqlx::Error)
 }
 
 pub struct DB {
@@ -28,7 +28,7 @@ impl DB {
       .await
       .map_err(|err| err.into())
       .report()
-      .attach_printable_lazy(|| format!("Unable to connect!"))?;
+      .attach_printable_lazy(|| "Unable to connect!")?;
     let migrator = migrate!();
     migrator.run(&pool).await
     .map_err(|err| err.into())
@@ -43,8 +43,9 @@ impl DB {
 
 #[cfg(test)]
 mod tests {
+  use error_stack::Report;
   use sqlx::Acquire;
-  use super::DB;
+  use super::{DB, DBError};
   use crate::model::User;
   #[tokio::test]
   async fn test_should_connect() {
@@ -57,8 +58,7 @@ mod tests {
     let mut t = db.pool.begin().await.unwrap();
 
     let mut t1 = t.begin().await.unwrap();
-    //ISSUE HERE: We don't want to use Report<C> in the test, but then will we get the stack info from insert?
-    let result: Result<(), sqlx::Error> = u.insert(&mut t1).await;
+    let _: Result<(), Report<DBError>> = u.insert(&mut t1).await;
     // u.insert(&mut t1).await.unwrap();
     t1.commit().await.unwrap();
     match u.id {
