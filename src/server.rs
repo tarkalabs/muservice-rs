@@ -1,6 +1,6 @@
 use color_eyre::{Report, Result, eyre::Context};
 use axum::{Router, Server};
-use hyper::{Body};
+use hyper::Body;
 use std::net::SocketAddr;
 use std::str::FromStr;
 use tracing::log::info;
