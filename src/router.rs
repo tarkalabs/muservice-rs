@@ -28,7 +28,10 @@ async fn users_handler(req: Request<Body>) -> Result<Json<Vec<User>>, StatusCode
 async fn create_user_handler(Json(mut payload): Json<User>, Extension(state): Extension<AppState>) -> Result<Response, StatusCode> {
     payload.insert(&state.db().connection())
         .await
-        .map_err(|_|StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|err| {
+            tracing::error!("{:?}", err);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
     Ok((
         StatusCode::CREATED,
         [("Content-Type", "application/json")]
