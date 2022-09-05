@@ -1,8 +1,8 @@
-use anyhow::{Result, Context};
+use color_eyre::{eyre::WrapErr, Result};
 use libmuservice::{router, server, app_state::AppState};
+use tracing_error::ErrorLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use libmuservice::settings::SETTINGS;
-
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -12,7 +12,9 @@ async fn main() -> Result<()> {
                 .unwrap_or_else(|_| SETTINGS.rust_log.clone().into()),
         ))
         .with(tracing_subscriber::fmt::layer())
+        .with(ErrorLayer::default())
         .init();
+    color_eyre::install()?;
 
     let app_state = AppState::init().await?;
     let router = router::build_router(app_state).await?;

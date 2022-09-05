@@ -5,9 +5,11 @@ use sqlx::{
     query_as,
     query_scalar,
 };
+use tracing::instrument;
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
-use anyhow::{Result, Context};
+use color_eyre::{eyre::WrapErr, Result};
+
 
 #[derive(FromRow, Debug, Serialize, Deserialize)]
 pub struct User {
@@ -26,6 +28,7 @@ impl Display for User {
 }
 
 impl User {
+  #[instrument(skip(ex))]
   pub async fn all<'a, E>(ex: E) -> Result<Vec<User>>
   where E: 'a + Executor<'a, Database = Postgres>
   {
@@ -33,12 +36,13 @@ impl User {
     Ok(users)
   }
 
+  #[instrument(skip(ex))]
   pub async fn insert<'a,  E>(&mut self, ex: E) -> Result<()>
   where E: 'a + Executor<'a, Database = Postgres>
   {
     let id = query_scalar::<_, i64>("insert into users(name, email) values($1, $2) returning id")
     .bind(self.name.clone()).bind(self.email.clone())
-    .fetch_one(ex).await.context("Unable to save")?;
+    .fetch_one(ex).await.context("Unable to save user")?;
     self.id = Some(id);
     Ok(())
   }
