@@ -1,6 +1,6 @@
 use axum::{body::Body, http::Request};
 use http::StatusCode;
-use libmuservice::{app_state::AppState, db::DB, model::User};
+use libmuservice::{app_state::AppState, db::DB, model::User, router::build_router};
 use sqlx::PgPool;
 use tower::{ServiceExt, Service};
 use std::net::{SocketAddr, TcpListener};
@@ -14,7 +14,7 @@ async fn test_should_work() {
     tokio::spawn(async move {
         axum::Server::from_tcp(listener)
             .unwrap()
-            .serve(libmuservice::router::build_router(app_state).await.unwrap().into_make_service())
+            .serve(build_router(app_state).await.unwrap().into_make_service())
             .await
             .unwrap();
     });
@@ -40,7 +40,7 @@ async fn test_should_work() {
 async fn test_create_user_handler(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = build_router(app_state).await.unwrap();
 
     let user = User { id: None, name: "userman".to_string(), email: "email@email.com".to_string() };
 
@@ -58,7 +58,7 @@ async fn test_create_user_handler(pool: PgPool) {
 async fn test_users_handler_empty(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = build_router(app_state).await.unwrap();
 
     let request = Request::builder()
         .uri("/users")
@@ -71,11 +71,11 @@ async fn test_users_handler_empty(pool: PgPool) {
     assert_eq!(users.len(), 0);
 }
 
-#[sqlx::test(migrations = "./test_migrations")]
+#[sqlx::test(fixtures("users"))]
 async fn test_users_handler_has_user(pool: PgPool) {
     let db = DB::new_with_pool(pool);
     let app_state = AppState::init_with_db(db);
-    let mut router = libmuservice::router::build_router(app_state).await.unwrap();
+    let mut router = build_router(app_state).await.unwrap();
 
     let request = Request::builder()
         .uri("/users")
